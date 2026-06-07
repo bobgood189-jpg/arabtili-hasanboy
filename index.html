@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<script>/* режим анимаций — применяем ДО отрисовки, чтобы не было мигания */(function(){try{var m=localStorage.getItem('motion');if(m!=='full'&&m!=='reduced'&&m!=='off'){m=(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)?'reduced':'full';}document.documentElement.setAttribute('data-motion',m);}catch(e){document.documentElement.setAttribute('data-motion','full');}})();</script>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>عربي — Учи арабский язык</title>
+<meta name="theme-color" content="#0d3d24"/>
+<meta name="description" content="Изучение арабского языка с нуля: алфавит, 1300+ слов с озвучкой, грамматика, игры, интервальные повторения."/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="icon" href="build/icon.svg"/>
+<link rel="apple-touch-icon" href="icons/icon-192.png"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="عربي Arabic"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Amiri:ital,wght@0,400;0,700;1,400&family=Scheherazade+New:wght@400;500;700&family=Lateef:wght@400;500;700&family=Reem+Kufi:wght@400;500;700&family=Aref+Ruqaa:wght@0,400;0,700&family=Cormorant:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- Sidebar -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar__logo">
+    <span class="logo-ar">عربي</span>
+    <span class="logo-ru">Учи арабский</span>
+  </div>
+  <ul class="sidebar__nav">
+    <li><a href="#" class="nav-item active" data-view="home"><span class="nav-icon">🏠</span><span>Главная</span></a></li>
+    <li><a href="#" class="nav-item" data-view="alphabet"><span class="nav-icon">الأ</span><span>Алфавит</span></a></li>
+    <li class="nav-group">
+      <div class="nav-vocab-header">
+        <a href="#" class="nav-item nav-vocab-main" data-view="vocaboverview"><span class="nav-icon">📚</span><span>Словарь</span></a>
+        <button class="nav-vocab-toggle" data-group="vocab" title="Разделы"><span class="nav-arrow">▾</span></button>
+      </div>
+      <ul class="nav-sub" id="vocab-sub"></ul>
+    </li>
+    <li><a href="#" class="nav-item" data-view="grammar"><span class="nav-icon">📖</span><span>Грамматика</span></a></li>
+    <li><a href="#" class="nav-item" data-view="games"><span class="nav-icon">🎮</span><span>Игры</span></a></li>
+    <li><a href="#" class="nav-item" data-view="tests"><span class="nav-icon">📝</span><span>Тесты</span></a></li>
+    <li class="nav-group" id="more-group">
+      <button class="nav-item nav-toggle" id="more-toggle"><span class="nav-icon">⋯</span><span>Другие</span><span class="nav-arrow">▾</span></button>
+      <ul class="nav-more-sub" id="more-sub">
+        <li><a href="#" class="nav-item" data-view="srs"><span class="nav-icon">🔁</span><span>Повторение</span></a></li>
+        <li><a href="#" class="nav-item" data-view="conjugation"><span class="nav-icon">🔀</span><span>Спряжение</span></a></li>
+        <li><a href="#" class="nav-item" data-view="dialogues"><span class="nav-icon">💬</span><span>Диалоги</span></a></li>
+        <li><a href="#" class="nav-item" data-view="reading"><span class="nav-icon">📜</span><span>Чтение</span></a></li>
+        <li><a href="#" class="nav-item" data-view="hadith"><span class="nav-icon">📿</span><span>Хадисы</span></a></li>
+        <li><a href="#" class="nav-item" data-view="translator"><span class="nav-icon">🔤</span><span>Переводчик</span></a></li>
+        <li><a href="#" class="nav-item" data-view="phrasebook"><span class="nav-icon">🗣️</span><span>Разговорник</span></a></li>
+        <li><a href="#" class="nav-item" data-view="workshop"><span class="nav-icon">🛠</span><span>Мастерская</span></a></li>
+        <li id="nav-admin-li" style="display:none"><a href="#" class="nav-item" data-view="admin"><span class="nav-icon">🛡</span><span>Админ-панель</span></a></li>
+      </ul>
+    </li>
+    <li><a href="#" class="nav-item" data-view="progress"><span class="nav-icon">📊</span><span>Прогресс</span></a></li>
+    <li><a href="#" class="nav-item" data-view="settings"><span class="nav-icon">⚙️</span><span>Настройки</span></a></li>
+  </ul>
+  <div class="sidebar__streak">
+    <span class="streak-fire">🔥</span>
+    <span id="streak-count">0</span>
+    <span>дней подряд</span>
+  </div>
+  <div class="sidebar__voice">
+    <span class="voice-title">🔊 Голос произношения</span>
+    <div class="voice-opts">
+      <button class="voice-opt" data-gender="female">👩 Женский</button>
+      <button class="voice-opt" data-gender="male">👨 Мужской</button>
+    </div>
+  </div>
+  <div class="sidebar__account" id="sidebar-account"></div>
+  <div class="sidebar__founder">
+    <span class="sf-label">Основатель сайта</span>
+    <span class="sf-name">Hasanboy Ibrokhimov</span>
+  </div>
+</nav>
+<button class="sidebar-toggle" id="sidebarToggle">☰</button>
+
+<!-- Main -->
+<main class="main" id="main">
+
+  <!-- HOME -->
+  <section class="view active" id="view-home">
+    <div class="hero-banner">
+      <div class="hero-text">
+        <p class="hero-label">Добро пожаловать!</p>
+        <h1>Учи арабский язык<br><span class="hero-arabic">من الصفر</span></h1>
+        <p class="hero-sub">С нуля до уверенного разговора. 22 игры, 49 тем грамматики (نحو и صرف), 1000+ слов с произношением (👩/👨), существительные в трёх числах (مفرد · مثنى · جمع) и схемы артикуляции.</p>
+        <div class="hero-btns">
+          <button class="btn btn-gold" onclick="App.navigate('alphabet')">Начать с алфавита →</button>
+          <button class="btn btn-outline" onclick="App.navigate('games')">🎮 К играм</button>
+        </div>
+      </div>
+      <div class="hero-deco">
+        <div class="arabic-circle">بِسْمِ اللّٰهِ</div>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row" id="home-stats"></div>
+
+    <!-- Слово дня -->
+    <div id="word-of-day"></div>
+
+    <!-- Continue -->
+    <div class="section-block" id="continue-section" style="display:none">
+      <h2 class="block-title">Продолжить обучение</h2>
+      <div class="continue-cards" id="continue-cards"></div>
+    </div>
+
+    <!-- Quick access -->
+    <h2 class="block-title">Разделы</h2>
+    <div class="quick-grid">
+      <div class="quick-card" onclick="App.navigate('alphabet')">
+        <div class="quick-icon">الأ</div>
+        <div class="quick-info"><strong>Алфавит</strong><p>28 букв арабского языка</p></div>
+      </div>
+      <div class="quick-card" onclick="App.navigate('vocab','numbers')">
+        <div class="quick-icon">🔢</div>
+        <div class="quick-info"><strong>Числа</strong><p>От 0 до 1000</p></div>
+      </div>
+      <div class="quick-card" onclick="App.navigate('vocab','animals')">
+        <div class="quick-icon">🐾</div>
+        <div class="quick-info"><strong>Животные</strong><p>15 слов</p></div>
+      </div>
+      <div class="quick-card" onclick="App.navigate('vocab','greetings')">
+        <div class="quick-icon">👋</div>
+        <div class="quick-info"><strong>Приветствия</strong><p>Базовые фразы</p></div>
+      </div>
+      <div class="quick-card" onclick="App.navigate('grammar')">
+        <div class="quick-icon">📖</div>
+        <div class="quick-info"><strong>Грамматика</strong><p>49 тем с тестами</p></div>
+      </div>
+      <div class="quick-card" onclick="App.navigate('games')">
+        <div class="quick-icon">🎮</div>
+        <div class="quick-info"><strong>22 игры</strong><p>Учи играя!</p></div>
+      </div>
+    </div>
+
+    <!-- Featured games -->
+    <h2 class="block-title" style="margin-top:2rem">Популярные игры</h2>
+    <div class="featured-games" id="featured-games"></div>
+  </section>
+
+  <!-- ALPHABET -->
+  <section class="view" id="view-alphabet">
+    <div class="view-header">
+      <h1>الحُرُوف — Арабский алфавит</h1>
+      <p>28 букв арабского языка. Нажми на букву, чтобы узнать подробности.</p>
+    </div>
+    <div class="alphabet-filters">
+      <button class="filter-btn active" data-filter="all">Все</button>
+      <button class="filter-btn" data-filter="connects">Соединяются</button>
+      <button class="filter-btn" data-filter="noconnect">Не соединяются слева</button>
+    </div>
+    <div class="alphabet-grid" id="alphabet-grid"></div>
+
+    <!-- Letter detail modal -->
+    <div class="letter-modal" id="letter-modal" style="display:none">
+      <div class="letter-modal__inner">
+        <button class="modal-close" id="modal-close">✕</button>
+        <div class="lm-letter" id="lm-letter"></div>
+        <div class="lm-info">
+          <h2 id="lm-name"></h2>
+          <p id="lm-latin"></p>
+          <p id="lm-desc"></p>
+        </div>
+        <div class="lm-forms">
+          <div class="form-item"><span class="form-label">Изолир.</span><span class="form-ar" id="lm-iso"></span></div>
+          <div class="form-item"><span class="form-label">Начало</span><span class="form-ar" id="lm-ini"></span></div>
+          <div class="form-item"><span class="form-label">Середина</span><span class="form-ar" id="lm-med"></span></div>
+          <div class="form-item"><span class="form-label">Конец</span><span class="form-ar" id="lm-fin"></span></div>
+        </div>
+        <div class="lm-voice">
+          <button class="btn btn-light btn-sm" id="lm-speak-f">🔊 👩 Женский голос</button>
+          <button class="btn btn-light btn-sm" id="lm-speak-m">🔊 👨 Мужской голос</button>
+        </div>
+        <div class="lm-pron" id="lm-pron"></div>
+        <div class="lm-examples">
+          <h4>Примеры:</h4>
+          <div id="lm-ex"></div>
+        </div>
+        <button class="btn btn-gold" id="lm-practice">🎮 Играть с этой буквой</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- VOCABULARY OVERVIEW -->
+  <section class="view" id="view-vocaboverview">
+    <div class="view-header">
+      <h1>📚 Словарь — все разделы</h1>
+      <p>Выбери тему, чтобы изучить слова</p>
+    </div>
+    <div class="vocaboverview-grid" id="vocaboverview-grid"></div>
+  </section>
+
+  <!-- VOCABULARY -->
+  <section class="view" id="view-vocab">
+    <div class="view-header">
+      <h1 id="vocab-title">Словарь</h1>
+      <p id="vocab-subtitle"></p>
+    </div>
+    <div class="vocab-toolbar">
+      <div class="vocab-search"><input type="text" id="vocab-search" placeholder="🔍 Поиск слова..."/></div>
+      <div class="vocab-view-btns">
+        <button class="view-btn active" data-vmode="cards" title="Карточки">⊞</button>
+        <button class="view-btn" data-vmode="table" title="Таблица">☰</button>
+      </div>
+    </div>
+    <div class="vocab-grid" id="vocab-grid"></div>
+    <div class="vocab-actions">
+      <button class="btn btn-gold" id="vocab-play-btn">🎮 Играть с этими словами</button>
+      <button class="btn btn-outline" id="vocab-srs-btn">🔁 Учить эту тему</button>
+      <button class="btn btn-outline" id="vocab-test-btn">📝 Тест (засчитать как изученные)</button>
+    </div>
+    <p class="vocab-learn-hint">📝 Изучи слова, затем пройди <b>тест по теме</b> — при результате ≥60% все слова этой темы засчитаются как изученные. Просто просмотр слов в «изученные» не идёт.</p>
+  </section>
+
+  <!-- GRAMMAR -->
+  <section class="view" id="view-grammar">
+    <div class="view-header">
+      <h1>القَوَاعِد — Грамматика</h1>
+      <p>49 тем в 6 группах — по уровню сложности, цепочкой от строения имени до сложного синтаксиса. После каждой темы — тест, после каждых 4 тем — большой контрольный.</p>
+    </div>
+    <div class="grammar-layout">
+      <div class="grammar-menu" id="grammar-menu"></div>
+      <div class="grammar-content" id="grammar-content">
+        <div class="grammar-placeholder">
+          <span>📖</span>
+          <p>Выбери тему из списка слева</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GAMES HUB -->
+  <section class="view" id="view-games">
+    <div class="view-header">
+      <h1>🎮 Игры — 22 вида</h1>
+      <p>Выбери игру и категорию слов</p>
+    </div>
+    <div class="games-filter">
+      <span>Категория: </span>
+      <select id="game-category-select"></select>
+    </div>
+    <div class="games-grid" id="games-grid"></div>
+  </section>
+
+  <!-- ACTIVE GAME -->
+  <section class="view" id="view-game">
+    <div class="game-topbar">
+      <button class="btn btn-sm" id="game-back-btn">← Назад</button>
+      <div class="game-topinfo">
+        <span id="game-title-bar">Игра</span>
+        <span class="game-score-bar">Очки: <strong id="game-score">0</strong></span>
+      </div>
+      <div class="game-progress-bar"><div class="game-progress-fill" id="game-progress-fill"></div></div>
+    </div>
+    <div class="game-area" id="game-area"></div>
+  </section>
+
+  <!-- TESTS -->
+  <section class="view" id="view-tests">
+    <div class="view-header">
+      <h1>📝 Тесты и контроль</h1>
+      <p>Проверь свои знания после изучения тем</p>
+    </div>
+    <div class="tests-grid" id="tests-grid"></div>
+  </section>
+
+  <!-- ACTIVE TEST -->
+  <section class="view" id="view-test-active">
+    <div class="test-header">
+      <button class="btn btn-sm" id="test-back-btn">← Назад</button>
+      <div>
+        <span id="test-title-bar">Тест</span>
+        <span class="test-progress-txt">Вопрос <span id="test-q-num">1</span> из <span id="test-q-total">10</span></span>
+      </div>
+    </div>
+    <div class="test-progress-bar"><div id="test-progress-fill" class="test-progress-fill"></div></div>
+    <div class="test-area" id="test-area"></div>
+  </section>
+
+  <!-- SRS (интервальное повторение) -->
+  <section class="view" id="view-srs">
+    <div class="view-header">
+      <h1>🔁 Повторение слов</h1>
+      <p>Умные интервальные повторения: показываем слово ровно тогда, когда ты начинаешь его забывать.</p>
+    </div>
+    <div id="srs-content"></div>
+  </section>
+
+  <!-- CONJUGATION (спряжение) -->
+  <section class="view" id="view-conjugation">
+    <div class="view-header">
+      <h1>🔀 Спряжение глаголов</h1>
+      <p>Прошедшее и настоящее время по всем местоимениям, породы I–X и тренажёр.</p>
+    </div>
+    <div id="conjugation-content"></div>
+  </section>
+
+  <!-- DIALOGUES -->
+  <section class="view" id="view-dialogues">
+    <div class="view-header">
+      <h1>💬 Диалоги по ситуациям</h1>
+      <p>Короткие озвученные мини-диалоги (👩/👨) — мост от слов к живой речи.</p>
+    </div>
+    <div id="dialogues-content"></div>
+  </section>
+
+  <!-- READING -->
+  <section class="view" id="view-reading">
+    <div class="view-header">
+      <h1>📜 Тексты для чтения</h1>
+      <p>Короткие тексты по уровням. Нажми на слово — всплывёт перевод и озвучка.</p>
+    </div>
+    <div id="reading-content"></div>
+  </section>
+
+  <!-- HADITH -->
+  <section class="view" id="view-hadith">
+    <div class="view-header">
+      <h1>📿 Хадисы Пророка ﷺ</h1>
+      <p>Изречения Пророка Мухаммада ﷺ — с переводом на русский и узбекский языки и озвучкой.</p>
+    </div>
+    <div id="hadith-content"></div>
+  </section>
+
+  <!-- TRANSLATOR -->
+  <section class="view" id="view-translator">
+    <div class="view-header">
+      <h1>🔤 Переводчик</h1>
+      <p>Введи слово по-русски или по-арабски — найдём перевод, транскрипцию и озвучку.</p>
+    </div>
+    <div id="translator-content"></div>
+  </section>
+
+  <!-- PHRASEBOOK -->
+  <section class="view" id="view-phrasebook">
+    <div class="view-header">
+      <h1>🗣️ Разговорник</h1>
+      <p>Готовые фразы на каждый день по ситуациям — с переводом и озвучкой.</p>
+    </div>
+    <div id="phrasebook-content"></div>
+  </section>
+
+  <!-- WORKSHOP (Мастерская) -->
+  <section class="view" id="view-workshop">
+    <div class="view-header">
+      <h1>🛠 Мастерская</h1>
+      <p>Слова и темы, добавленные администраторами сообщества — с именем автора.</p>
+    </div>
+    <div id="workshop-content"></div>
+  </section>
+
+  <!-- ADMIN -->
+  <section class="view" id="view-admin">
+    <div class="view-header">
+      <h1>🛡 Админ-панель</h1>
+      <p>Управление учениками: логины, пароли, ранги, штрафы и права.</p>
+    </div>
+    <div id="admin-content"></div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section class="view" id="view-settings">
+    <div class="view-header">
+      <h1>⚙️ Настройки</h1>
+      <p>Тема, озвучка, ежедневная цель и резервная копия прогресса.</p>
+    </div>
+    <div id="settings-content"></div>
+  </section>
+
+  <!-- PROGRESS -->
+  <section class="view" id="view-progress">
+    <div class="view-header">
+      <h1>📊 Мой прогресс</h1>
+    </div>
+    <div id="rank-card-wrap"></div>
+    <div class="progress-layout" id="progress-layout"></div>
+    <div id="leaderboard-wrap"></div>
+    <div id="ranktable-wrap"></div>
+  </section>
+
+</main>
+
+<!-- Welcome / founder splash (shown on entry) -->
+<div class="welcome-overlay" id="welcome-overlay" style="display:none">
+  <div class="welcome-card">
+    <div class="welcome-card__logo">عربي</div>
+    <p class="welcome-card__hi">أهلاً وسهلاً · Добро пожаловать</p>
+    <h2>Приложение для изучения<br>арабского языка</h2>
+    <div class="welcome-founder">
+      <span class="welcome-founder__label">Основатель сайта</span>
+      <span class="welcome-founder__name">Hasanboy Ibrokhimov</span>
+    </div>
+    <button class="btn btn-gold" id="welcome-start">Начать обучение →</button>
+  </div>
+</div>
+
+<!-- Confetti canvas -->
+<canvas id="confetti-canvas" style="position:fixed;top:0;left:0;pointer-events:none;z-index:9999;"></canvas>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script src="config.js"></script>
+<script src="data.js"></script>
+<script src="data-extra.js"></script>
+<script src="data-vocab.js"></script>
+<script src="data-pron.js"></script>
+<script src="data-grammar.js"></script>
+<script src="data-nouns.js"></script>
+<script src="data-words300.js"></script>
+<script src="data-words600.js"></script>
+<script src="data-words700.js"></script>
+<script src="data-words800.js"></script>
+<script src="data-words900.js"></script>
+<script src="data-grammar-ext.js"></script>
+<script src="data-grammar-ext2.js"></script>
+<script src="data-grammar-more.js"></script>
+<script src="data-content.js"></script>
+<script src="data-dialogues2.js"></script>
+<script src="data-hadith.js"></script>
+<script src="main.js"></script>
+<script src="data-i18n.js"></script>
+<script src="data-i18n-auto.js"></script>
+<script src="features.js"></script>
+
+<!-- ============================================================
+     GSAP — Premium Animation Engine (бесплатная CDN-версия)
+     ScrollTrigger включён на случай scroll-сцен в будущих блоках.
+     animations.js — наша система: Таваф / Зонты Медины / Поток данных.
+     Порядок загрузки: gsap → ScrollTrigger → animations.js
+============================================================ -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/ScrollTrigger.min.js"></script>
+<script src="animations.js"></script>
+</body>
+</html>

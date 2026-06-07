@@ -1,0 +1,68 @@
+{
+  "name": "arabic-learn",
+  "productName": "Arabic Learn",
+  "version": "1.0.0",
+  "description": "عربي — приложение для изучения арабского языка: алфавит, словарь, грамматика, игры, тесты, произношение (👩/👨).",
+  "author": "Arabic Learn",
+  "license": "MIT",
+  "main": "electron-main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder",
+    "dist:win": "electron-builder --win",
+    "dist:mac": "electron-builder --mac",
+    "dist:linux": "electron-builder --linux",
+    "pack": "electron-builder --dir"
+  },
+  "devDependencies": {
+    "electron": "^31.7.6",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.arabiclearn.app",
+    "productName": "Arabic Learn",
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "files": [
+      "index.html",
+      "style.css",
+      "main.js",
+      "data.js",
+      "data-extra.js",
+      "data-vocab.js",
+      "data-pron.js",
+      "data-grammar.js",
+      "data-nouns.js",
+      "electron-main.js",
+      "preload.js",
+      "build/**"
+    ],
+    "win": {
+      "target": [
+        { "target": "nsis", "arch": ["x64"] },
+        { "target": "portable", "arch": ["x64"] }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Arabic Learn"
+    },
+    "mac": {
+      "target": [
+        { "target": "dmg", "arch": ["x64", "arm64"] },
+        { "target": "zip", "arch": ["x64", "arm64"] }
+      ],
+      "category": "public.app-category.education"
+    },
+    "linux": {
+      "target": ["AppImage", "deb"],
+      "category": "Education"
+    }
+  }
+}
